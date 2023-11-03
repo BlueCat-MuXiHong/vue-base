@@ -1,0 +1,38 @@
+<template>
+  <div>
+    <el-container>
+      <el-aside width="auto">
+        <CommonAside/>
+      </el-aside>
+      <el-container>
+        <el-header>
+          <CommonHeader/>
+        </el-header>
+      </el-container>
+      <el-main>
+        <router-view/>
+      </el-main>
+    </el-container>
+  </div>
+</template>
+
+<script>
+import CommonAside from "../components/CommonAside.vue";
+import CommonHeader from "../components/CommonHeader.vue";
+import CommonTag from "../components/CommonTag.vue";
+
+export default {
+  components: {
+    CommonAside,
+    CommonTag,
+    CommonHeader
+  }
+}
+</script>
+
+
+<style scoped>
+.el-header {
+  padding: 0;
+}
+</style>

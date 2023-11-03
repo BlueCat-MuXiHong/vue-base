@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1>init1</h1>
+    <router-view/>
   </div>
 </template>
 
@@ -11,4 +11,13 @@ export default {
 </script>
 
 <style>
+body {
+  html, body, h3, p {
+    padding: 0;
+    margin: 0;
+  }
+
+  background-color: #D3D2C6;
+  background-image: url("../static/img/texture.png");
+}
 </style>
