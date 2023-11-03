@@ -8,10 +8,11 @@
         <el-header>
           <CommonHeader/>
         </el-header>
+        <!--        <CommonTag/>-->
+        <el-main>
+          <router-view/>
+        </el-main>
       </el-container>
-      <el-main>
-        <router-view/>
-      </el-main>
     </el-container>
   </div>
 </template>

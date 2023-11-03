@@ -1,13 +1,13 @@
 <template>
   <div class="header-container">
-    <!--    <div class="l-content">-->
-    <!--      <el-button style="margin-right: 10px" icon="el-icon-menu" size="mini" @click="handMenu"></el-button>-->
-    <!--      &lt;!&ndash;面包屑&ndash;&gt;-->
-    <!--      <el-breadcrumb separator="/">-->
-    <!--        <el-breadcrumb-item v-for="item in tags" :key="item.path" :to="{ path: item.path }">{{ item.label }}-->
-    <!--        </el-breadcrumb-item>-->
-    <!--      </el-breadcrumb>-->
-    <!--    </div>-->
+    <div class="l-content">
+      <el-button icon="el-icon-menu" size="mini" style="margin-right: 10px" @click="handMenu"></el-button>
+      <!--面包屑-->
+      <!--          <el-breadcrumb separator="/">-->
+      <!--            <el-breadcrumb-item v-for="item in tags" :key="item.path" :to="{ path: item.path }">{{ item.label }}-->
+      <!--            </el-breadcrumb-item>-->
+      <!--          </el-breadcrumb>-->
+    </div>
     <div class="r-content">
       <el-dropdown>
                 <span class="el-dropdown-link">
