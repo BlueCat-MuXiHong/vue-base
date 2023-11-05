@@ -10,14 +10,16 @@ export default {
 }
 </script>
 
-<style>
-body {
-  html, body, h3, p {
-    padding: 0;
-    margin: 0;
-  }
+<style lang="less">
 
-  background-color: #D3D2C6;
+html {
+  background-color: #525288;
   background-image: url("../static/img/texture.png");
+}
+
+html, body, h3, p {
+  padding: 0;
+  margin: 0;
+
 }
 </style>

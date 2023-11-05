@@ -16,3 +16,39 @@ export const login = (data) => {
 export const getMenu = () => {
   return http.get("/permission/getMenu")
 }
+
+/**
+ * 分页获取数据
+ * @param data 分页数据
+ * @returns 用户列表
+ */
+export const getUserByPage = (data) => {
+  return http.post("/user/getUserByPage", data)
+}
+
+/**
+ * 分页获取角色列表
+ * @param data
+ * @returns 角色列表
+ */
+export const getRoleByPage = (data) => {
+  return http.post('/role/getRoleByPage', data)
+}
+
+/**
+ * 跟新用户
+ * @param data
+ * @returns
+ */
+export const updateUser = (data) => {
+  return http.put('/user', data)
+}
+
+/**
+ * 添加用户
+ * @param data
+ * @returns
+ */
+export const addUser = (data) => {
+  return http.post('/user', data)
+}

@@ -3,7 +3,8 @@ import {getChildrenPath} from "../utils/RouterUtil";
 
 export default {
   state: {
-    menu: []
+    menu: [],
+    collapseMenu: false
   },
   mutations: {
     setMenu(state, val) {
@@ -13,6 +14,9 @@ export default {
     },
     addMenu(state, router) {
       getChildrenPath(router)
+    },
+    collapseMenu(state) {
+      state.collapseMenu = !state.collapseMenu
     }
 
 

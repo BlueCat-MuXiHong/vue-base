@@ -4,12 +4,12 @@
            background-color="#545c64"
            class="el-menu-vertical-demo"
            default-active="1-4-1"
-
+           :collapse="isCollapse"
            text-color="#fff"
            @close="handleClose"
            @open="handleOpen"
   >
-    <h3>{{ '通用系统' }} </h3>
+    <h3>{{ isCollapse ? '后台' : '通用系统' }} </h3>
     <el-menu-item v-for="item in noChildren"
                   :key="item.id"
                   :index="item.id"
@@ -20,7 +20,7 @@
     </el-menu-item>
 
     <el-submenu v-for="item in hasChildren" :key="item.label" index="item.label">
-      <template slot="title">
+      <template>
         <i :class="`el-icon-${item.icon}`"></i>
         <span slot="title">{{ item.name }}</span>
       </template>
@@ -49,13 +49,10 @@ export default {
     },
     //点击菜单
     clickMenu(item) {
-      // console.log(item)
       //当页面的路由与跳转的路由不一致才允许跳转
       if (this.$route.path !== item.url && !(this.$route.path === '/home' && (item.path === '/'))) {
         this.$router.push(item.url)
       }
-      // this.$store.commit('selectMenu', item)
-      // console.log(this.$store.state.tab.tableList)
     }
   }, computed: {
     menu() {
@@ -66,6 +63,9 @@ export default {
     },
     hasChildren() {
       return this.menu.filter(item => item.children.length !== 0)
+    },
+    isCollapse() {
+      return this.$store.state.tab.collapseMenu
     }
   }
 }
