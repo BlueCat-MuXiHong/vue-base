@@ -13,11 +13,11 @@
       <!--      </el-form>-->
     </div>
     <el-table
-      :data="tableData"
+      :data="tableData" border
       style="width: 100%">
       <el-table-column label="序号" type="index"></el-table-column>
-      <el-table-column label="账号" prop="username" width="100"></el-table-column>
-      <el-table-column label="姓名" prop="realname" width="100"></el-table-column>
+      <el-table-column label="账号" prop="username"></el-table-column>
+      <el-table-column label="姓名" prop="realname"></el-table-column>
       <el-table-column label="性别" width="50">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.gender === 1 ? '男' : '女' }}</span>
@@ -26,7 +26,7 @@
       <el-table-column label="电话号码" prop="phone"></el-table-column>
       <el-table-column label="邮箱" prop="email"></el-table-column>
       <el-table-column label="出生日期" prop="birthday"></el-table-column>
-      <el-table-column label="是否启用">
+      <el-table-column align="center" label="是否启用">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.lock"
@@ -39,7 +39,9 @@
       </el-table-column>
       <el-table-column label="角色" prop="roles">
         <template slot-scope="scope">
-          <el-select v-model="value" multiple placeholder="请选择" style="margin-left: 5px">
+          <el-select
+            v-model="scope.row.rolesList" multiple placeholder="请选择" style="margin-left: 5px"
+            @change="handlerUserRolesChange(scope.row)">
             <el-option
               v-for="item in options"
               :key="item.value"
@@ -210,9 +212,21 @@ export default {
       this.$refs.form.resetFields()
       this.dialogVisible = false
     },
+    handlerUserRolesChange(a, b) {
+      console.log(a, b)
+    },
     getUserList() {
       getUserByPage(this.pageParams).then((data) => {
-        this.tableData = data.data.list
+        let list = data.data.list
+        list.map(i => {
+          if (i.roles[0] && i.roles[0].name) {
+            i.rolesList = []
+            i.rolesList.push(i.roles[0].name)
+          } else {
+            i.rolesList = []
+          }
+        })
+        this.tableData = list
       })
     },
     getRoleList() {
@@ -224,13 +238,7 @@ export default {
     }
   },
   computed: {
-    roleTemp(val) {
-      let temp;
-      val.forEach(item => {
-        temp.push({value: item.id, label: item.name})
-      })
-      return temp
-    }
+
   },
   mounted() {
     this.getUserList()
@@ -241,7 +249,7 @@ export default {
 
 <style scoped>
 .box /deep/ .el-table--border td {
-  border-left: 0;
+  border-left: 0 !important;
 }
 
 .manage-header {

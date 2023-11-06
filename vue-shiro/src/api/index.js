@@ -52,3 +52,13 @@ export const updateUser = (data) => {
 export const addUser = (data) => {
   return http.post('/user', data)
 }
+
+
+/**
+ * 修改用户角色
+ * @param data
+ * @returns
+ */
+export const insertUserRoles = (data) => {
+  return http.post('/user/insertUserRoles', data)
+}
