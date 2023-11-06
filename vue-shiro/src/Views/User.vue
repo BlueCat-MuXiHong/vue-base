@@ -41,7 +41,8 @@
         <template slot-scope="scope">
           <el-select
             v-model="scope.row.rolesList" multiple placeholder="请选择" style="margin-left: 5px"
-            @change="handlerUserRolesChange(scope.row)">
+            @visible-change="handlerUserRolesVisibleChange($event,scope.row)"
+            @remove-tag="handlerUserRolesRemoveChange(scope.row)">
             <el-option
               v-for="item in options"
               :key="item.value"
@@ -102,7 +103,8 @@
 </template>
 
 <script>
-import {addUser, getRoleByPage, getUserByPage, updateUser} from "../api";
+import {addUser, getRoleByPage, getUserByPage, insertUserRoles, updateUser} from "../api";
+import {compareArray} from "../utils/ArrayUtils";
 
 export default {
   data() {
@@ -212,39 +214,70 @@ export default {
       this.$refs.form.resetFields()
       this.dialogVisible = false
     },
-    handlerUserRolesChange(a, b) {
-      console.log(a, b)
+    handlerUserRolesVisibleChange(isVisible, val) {
+      if (!isVisible) {
+        //判断，如果rolesList中的值和role中的值相同，不发起请求
+        //取出roles中的值
+        let rolesId = []
+        val.roles.forEach(item => {
+          rolesId.push(item.id)
+        })
+        if (!compareArray(rolesId, val.rolesList)) {
+          let params = {id: val.usercode, ids: val.rolesList}
+          insertUserRoles(params).then(data => {
+            if (data.code === 200) {
+              this.$message.success("修改成功")
+              this.getUserList()
+            }
+          })
+        }
+      }
+    },
+    handlerUserRolesRemoveChange(val) {
+      // console.log(val)
+      let params = {id: val.usercode, ids: val.rolesList}
+      insertUserRoles(params).then(data => {
+        if (data.code === 200) {
+          this.$message.success("修改成功")
+          this.getUserList()
+        }
+      })
     },
     getUserList() {
       getUserByPage(this.pageParams).then((data) => {
         let list = data.data.list
-        list.map(i => {
-          if (i.roles[0] && i.roles[0].name) {
-            i.rolesList = []
-            i.rolesList.push(i.roles[0].name)
+        list.map(item => {
+          if (item.roles.length === 0) {
+            item.rolesList = []
           } else {
-            i.rolesList = []
+            item.rolesList = []
+            item.roles.forEach(temp => {
+              if (temp) {
+                item.rolesList.push(temp.id)
+              }
+            })
           }
         })
+        console.log(list)
         this.tableData = list
       })
     },
     getRoleList() {
       getRoleByPage(this.pageParams).then((data) => {
         data.data.list.forEach(item => {
-          this.options.push({value: item.name, label: item.code})
+          this.options.push({value: item.id, label: item.name})
         })
       })
     }
   },
-  computed: {
-
-  },
+  computed: {},
   mounted() {
     this.getUserList()
     this.getRoleList()
   }
 }
+
+
 </script>
 
 <style scoped>
