@@ -1,7 +1,7 @@
 <template>
   <div
-    v-loading="loading"
-    class="roles-box"
+      v-loading="loading"
+      class="roles-box"
   >
 
     <div class="role-table">
@@ -12,10 +12,10 @@
       </div>
       <div class="role-table-wrapper">
         <el-scrollbar
-          ref="scrollbar"
-          class="role-table__scrollbar"
-          tag="div"
-          wrap-style="overflow-x: hidden;"
+            ref="scrollbar"
+            class="role-table__scrollbar"
+            tag="div"
+            wrap-style="overflow-x: hidden;"
         >
           <table>
             <tr v-for="(level1, index1) in roles" :key="index1">
@@ -29,14 +29,13 @@
                   <div v-for="(level2, index2) in level1.children" :key="index2" class="level2" style="display: flex;">
                     <div class="level2-name" style="flex: none;width: 170px;">{{ level2.name }}</div>
                     <div class="content-children">
-
-                      <div class="level4" style="display: flex;flex-wrap: wrap;">
+                      <div class="level3" style="display: flex;flex-wrap: wrap;">
                         <div class="roles_check">
                                 <span v-if="level2.children && level2.children.length">
                                   <el-checkbox
-                                    :key="level2.id"
-                                    v-model="selectAll[level2.id]"
-                                    @change="selectColumn(level2.children,$event,{},'all',level2.id)"
+                                      :key="level2.id"
+                                      v-model="selectAll[level2.id]"
+                                      @change="selectColumn(level2.children,$event,{},'all',level2.id)"
                                   >
                                     全选
                                   </el-checkbox>
@@ -46,8 +45,8 @@
                         <div v-for="(model,index) in level2.children" :key="index">
                           <div v-if="model.name !=='标识页面权限' " class="roles_check">
                             <el-checkbox
-                              v-model="model.checked"
-                              @change="selectColumn(model, $event, level2, 'single', level2.id)">
+                                v-model="model.checked"
+                                @change="selectColumn(model, $event, level2, 'single', level2.id)">
                               {{ model.name }}
                             </el-checkbox>
                           </div>
@@ -62,12 +61,15 @@
         </el-scrollbar>
       </div>
     </div>
-    <el-button :loading="loading" size="small" type="primary" @click="submit">保存</el-button>
-    <el-button :loading="loading" size="small" type="info" @click="handleCancel">取消</el-button>
+    <el-button type="primary" @click="submit">主要按钮</el-button>
+    <el-button size="small" type="info" @click="handleCancel">取消</el-button>
   </div>
 </template>
 
 <script>
+import {getParentNodes} from "../utils/TreeUtils";
+import {uniqueArray} from "../utils/ArrayUtils";
+
 export default {
   props: {
     loading: {
@@ -81,26 +83,16 @@ export default {
   },
   data() {
     return {
-      filterIdLength: 8,
+      filterIdLength: 6,
       checkedList: [],
-      roleStatusList: [
-        {
-          name: '启用',
-          value: true
-        },
-        {
-          name: '禁用',
-          value: false
-        }
-      ],
       roleTypeAllList: new Map(), // 全部按钮权限
+      selectAll: {},
       ruleForm: {
         name: '',
         status: '',
         type: '',
         attribute: 'unit'
       },
-      selectAll: {},
     }
   },
   mounted() {
@@ -108,11 +100,30 @@ export default {
     this.getMapRoleTypeAllList(this.roles)
   },
   methods: {
+    // 抽取全部按钮权限
+    getMapRoleTypeAllList(list) {
+      list.forEach((item) => {
+        if (item.children && item.children.length > 0) {
+          if (item.id.length === this.filterIdLength) {
+            this.roleTypeAllList.set(item.id, (this.roleTypeAllList.get(item.id)) || item.children)
+          }
+          this.getMapRoleTypeAllList(item.children)
+        }
+      })
+    },
+    // 对于编辑而言，一进来应该把标记的选项保存
+    setCheckedItems(list) {
+      for (let i = 0; i < list.length; i++) {
+        this.getAllLastChildrenItem(list[i])
+      }
+    },
     // 全选-菜单按钮权限
     selectColumn(data = [], valb, childData, key, allname) {
+      console.log(this.selectAll)
       // 全选 涉及到数据记录的更改、单选的变动
       if (key === 'all') {
         this.selectAll[allname] = valb
+        console.log(this.selectAll)
         for (let i = 0; i < data.length; i++) {
           data[i].checked = valb
           this.setCheckedData(data[i], valb)
@@ -199,48 +210,26 @@ export default {
           this.checkedList.push(list)
         }
       }
-    },
-
-    // 抽取全部按钮权限
-    getMapRoleTypeAllList(list) {
-      list.forEach((item) => {
-        if (item.children && item.children.length > 0) {
-          if (item.id.length === this.filterIdLength) {
-            this.roleTypeAllList.set(item.id, (this.roleTypeAllList.get(item.id)) || item.children)
-          }
-          this.getMapRoleTypeAllList(item.children)
-        }
-      })
-    },
-    // 对于编辑而言，一进来应该把标记的选项保存
-    setCheckedItems(list) {
-      for (let i = 0; i < list.length; i++) {
-        this.getAllLastChildrenItem(list[i])
-      }
+      console.log(this.selectAll)
     },
     submit() {
-      this.$refs.detailsFormId.validate(valid => {
-        if (valid) {
-          if (!this.checkedList.length) {
-            this.$message.warning("菜单权限为空")
-            return
-          }
-          const roleOption = {
-            name: this.ruleForm.name,
-            use: this.ruleForm.status,
-            type: this.ruleForm.type,
-            unitDepartmentLevel: this.ruleForm.attribute,
-            permissions: this.checkedList
-          }
-          this.$emit('save-role', roleOption)
+      console.log(this.roles)
+      let allNodes = []
+      this.checkedList.forEach(item => {
+        let temp = getParentNodes(this.roles, item.id)
+        for (let i = 0; i < temp.length; i++) {
+          allNodes.push(temp[i])
         }
       })
+      console.log(uniqueArray(allNodes))
     },
     handleCancel() {
       this.$emit('cancel')
     }
   }
 }
+
+
 </script>
 
 <style lang="stylus" scoped>

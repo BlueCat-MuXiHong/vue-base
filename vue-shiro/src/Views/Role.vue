@@ -72,6 +72,7 @@
         :roles="rolePermission">
       </Detail>
     </el-dialog>
+    {{ rolePermission }}
   </div>
 </template>
 
@@ -104,7 +105,7 @@ export default {
       },
       modalType: 0,
       dialogVisible: false,
-      dialogVisible1: true,
+      dialogVisible1: false,
       rolePermission: [],
 
       rules: {
@@ -153,16 +154,16 @@ export default {
         this.tableData = data.data.list
       })
     },
-    getPermissionByRoleId() {
+    getPermission() {
       getPermissionByRoleId("922909b9-eb8c-4bc7-bd74-6638ea9e0a2c").then(data => {
-        console.log(data.data)
         this.rolePermission = data.data
+        console.log(this.rolePermission)
       })
     }
   },
   mounted() {
     this.getRoles()
-    this.getPermissionByRoleId()
+    this.getPermission()
   }
 }
 </script>
