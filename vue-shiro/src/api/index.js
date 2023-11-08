@@ -1,5 +1,6 @@
 import http from "../utils/request";
 
+
 /**
  * 登录
  * @param data 用户名和密码
@@ -61,4 +62,13 @@ export const addUser = (data) => {
  */
 export const insertUserRoles = (data) => {
   return http.post('/user/insertUserRoles', data)
+}
+
+/**
+ * 根据
+ * @param params
+ * @returns {Promise<axios.AxiosResponse<any>>}
+ */
+export const getPermissionByRoleId = (params) => {
+  return http.get(`/permission/getPermissionByRoleId?roleId=${params}`)
 }
