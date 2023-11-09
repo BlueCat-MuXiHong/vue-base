@@ -24,14 +24,14 @@
         <template slot-scope="scope">
           <el-button size="mini" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
           <el-button size="mini" type="danger" @click="handleDel(scope.row)">删除</el-button>
-          <el-button size="mini" type="warning" @click="handleRolePermission(scope.row)">分配权限</el-button>
+          <el-button size="mini" type="warning" @click="handleRolePermission(scope.row.id)">分配权限</el-button>
         </template>
       </el-table-column>
     </el-table>
     <el-dialog
       :before-close="handleClose"
       :title="modalType===0?'新增':'修改'"
-      :visible.sync="dialogVisible"
+      :visible.sync="dialogVisibleRole"
       width="50%">
       <el-form ref="form" :inline="true" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="账号" prop="username">
@@ -63,16 +63,15 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-                <el-button @click="cancel">取 消</el-button>
                 <el-button type="primary" @click="submit">确 定</el-button>
+                <el-button @click="cancel">取 消</el-button>
             </span>
     </el-dialog>
-    <el-dialog :visible.sync="dialogVisible1">
+    <el-dialog :visible.sync="dialogVisiblePermission" width="50%">
       <Detail
         :roles="rolePermission">
       </Detail>
     </el-dialog>
-    {{ rolePermission }}
   </div>
 </template>
 
@@ -104,10 +103,9 @@ export default {
         headImg: ''
       },
       modalType: 0,
-      dialogVisible: false,
-      dialogVisible1: false,
+      dialogVisibleRole: false,
+      dialogVisiblePermission: false,
       rolePermission: [],
-
       rules: {
         username: [
           {required: true, message: '请输入账号', trigger: 'blur'},
@@ -130,40 +128,67 @@ export default {
       }
     }
   }, methods: {
-    handleEdit() {
-      this.dialogVisible = true;
-    },
-    handleDel() {
-
-    },
-    handleRolePermission() {
-      this.dialogVisible1 = true
-    },
+    /**
+     * 关闭dialog前做的事
+     */
     handleClose() {
       this.$refs.form.resetFields()
-      this.dialogVisible = false
+      this.dialogVisibleRole = false
     },
-    submit() {
-      this.dialogVisible = false;
-    },
-    cancel() {
-      this.dialogVisible = false;
-    },
+    /**
+     * 初始化，获取全部不的角色信息
+     */
     getRoles() {
       getRoleByPage(this.pageParams).then(data => {
         this.tableData = data.data.list
       })
     },
-    getPermission() {
-      getPermissionByRoleId("922909b9-eb8c-4bc7-bd74-6638ea9e0a2c").then(data => {
+    /**
+     * 编辑角色信息
+     */
+    handleEdit() {
+      this.dialogVisibleRole = true;
+    },
+    /**
+     * 删除角色操作
+     */
+    handleDel() {
+
+    },
+    /**
+     * 作用于新增或编辑时的提交按钮
+     */
+    submit() {
+      this.$refs.form.resetFields();
+      this.dialogVisibleRole = false;
+    },
+    /**
+     * 作用于新增或编辑时的取消按钮
+     */
+    cancel() {
+      this.$refs.form.resetFields();
+      this.dialogVisibleRole = false;
+    },
+    /**
+     * 根据角色id获取权限信息
+     * @param roleId
+     */
+    getPermission(roleId) {
+      getPermissionByRoleId(roleId).then(data => {
         this.rolePermission = data.data
-        console.log(this.rolePermission)
       })
-    }
+    },
+    /**
+     * 打开dialog并将当前的权限信息更新
+     * @param roleId
+     */
+    handleRolePermission(roleId) {
+      this.getPermission(roleId);
+      this.dialogVisiblePermission = true
+    },
   },
   mounted() {
     this.getRoles()
-    this.getPermission()
   }
 }
 </script>
