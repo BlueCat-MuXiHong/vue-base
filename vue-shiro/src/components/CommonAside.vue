@@ -58,7 +58,6 @@ export default {
       return this.$store.state.tab.menu || JSON.parse(localStorage.getItem('menu'))
     },
     noChildren() {
-      console.log(this.menu)
       return this.menu.filter(item => item.children.length === 0)
     },
     hasChildren() {

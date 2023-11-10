@@ -188,7 +188,6 @@ export default {
       this.dialogVisiblePermission = true
     },
     saveRole(data) {
-      console.log(data)
       insetRolePermission(data).then(data => {
         if (data.code === 200) {
           this.$message.success("修改成功")
