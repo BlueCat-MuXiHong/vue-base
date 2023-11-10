@@ -23,6 +23,12 @@ router.beforeEach((to, from, next) => {
             registerRouteFresh = false
             next({...to, replace: true});
         } else {
+            //如果输入的是一个不存在的路由，则会跳转到登录页
+            if (to.matched.length === 0) {
+                sessionStorage.removeItem("Authorization")
+                localStorage.removeItem('menu')
+                next('/login')
+            }
             next()
         }
     } else {
