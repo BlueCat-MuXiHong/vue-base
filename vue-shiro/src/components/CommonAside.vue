@@ -33,7 +33,6 @@
 </template>
 
 <script>
-import Cookie from "js-cookie";
 
 export default {
 
@@ -56,9 +55,10 @@ export default {
     }
   }, computed: {
     menu() {
-      return JSON.parse(Cookie.get('menu') || this.$store.state.tab.menu)
+      return JSON.parse(localStorage.getItem('menu') || this.$store.state.tab.menu)
     },
     noChildren() {
+      console.log(this.menu)
       return this.menu.filter(item => item.children.length === 0)
     },
     hasChildren() {

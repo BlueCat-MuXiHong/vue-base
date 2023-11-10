@@ -42,17 +42,31 @@ export default {
               sessionStorage.setItem("Authorization", data.data.access_token)
               sessionStorage.setItem("refreshToken", data.data.refresh_token)
               //获取菜单
-              getMenu().then((data) => {
-                this.$store.commit('setMenu', data.data)
-                this.$store.commit('addMenu', this.$router)
-                this.$message.success("登录成功")
-                this.$router.push("/home")
-              })
+
+              this.menuFormat();
+              // getMenu().then((data) => {
+              //   this.$store.commit('setMenu', data.data)
+              //   this.$store.commit('addMenu', this.$router)
+              //   this.$message.success("登录成功")
+              //   this.$router.push("/main")
+              // })
+
             } else {
               this.$message.error(data.data.message)
             }
           })
         }
+      })
+    },
+    menuFormat() {
+      getMenu().then(data => {
+        //处理数据
+        console.log('allMenu', data.data)
+        //存储两份，1.份存储在local,一份在store
+        localStorage.setItem('menu', JSON.stringify(data.data))
+        this.$store.commit('setMenu', data.data)
+        this.$message.success("登录成功")
+        this.$router.push("/main")
       })
     }
   }

@@ -3,7 +3,6 @@
       v-loading="loading"
       class="roles-box"
   >
-
     <div class="role-table">
       <div class="table-head">
         <div>模块权限</div>
@@ -11,12 +10,7 @@
         <div>按钮权限</div>
       </div>
       <div class="role-table-wrapper">
-        <el-scrollbar
-            ref="scrollbar"
-            class="role-table__scrollbar"
-            tag="div"
-            wrap-style="overflow-x: hidden;"
-        >
+        <el-scrollbar ref="scrollbar" class="role-table__scrollbar" tag="div" wrap-style="overflow-x: hidden;">
           <table>
             <tr v-for="(level1, index1) in roles" :key="index1">
               <!--模块权限-->
@@ -79,6 +73,10 @@ export default {
     roles: {
       type: Array,
       default: () => []
+    },
+    roleId: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -100,7 +98,44 @@ export default {
     this.getMapRoleTypeAllList(this.roles)
   },
   methods: {
-    // 抽取全部按钮权限
+    /**
+     * 对于编辑而言，一进来应该把标记的选项保存
+     * @param list
+     */
+    setCheckedItems(list) {
+      for (let i = 0; i < list.length; i++) {
+        this.getAllLastChildrenItem(list[i])
+      }
+    },
+    /**
+     * 递归处理树结构，将树结构最后一级元素抽离出来
+     * @param list
+     */
+    getAllLastChildrenItem(list) {
+      if (list.children.length) {
+        this.selectAll[list.id] = this.hasAllChecked(list.children)
+        for (let i = 0; i < list.children.length; i++) {
+          this.getAllLastChildrenItem(list.children[i])
+        }
+      } else {
+        if (list.checked) {
+          this.checkedList.push(list)
+        }
+      }
+    },
+    /**
+     * 判断是否全部选中
+     * @param list
+     */
+    hasAllChecked(list) {
+      return list.every(item => {
+        return item.checked
+      })
+    },
+    /**
+     * 抽取全部按钮权限
+     * @param list
+     */
     getMapRoleTypeAllList(list) {
       list.forEach((item) => {
         if (item.children && item.children.length > 0) {
@@ -111,13 +146,14 @@ export default {
         }
       })
     },
-    // 对于编辑而言，一进来应该把标记的选项保存
-    setCheckedItems(list) {
-      for (let i = 0; i < list.length; i++) {
-        this.getAllLastChildrenItem(list[i])
-      }
-    },
-    // 全选-菜单按钮权限
+    /**
+     * 全选-菜单按钮权限
+     * @param data
+     * @param valb
+     * @param childData
+     * @param key
+     * @param allname
+     */
     selectColumn(data = [], valb, childData, key, allname) {
       console.log(this.selectAll)
       // 全选 涉及到数据记录的更改、单选的变动
@@ -164,8 +200,11 @@ export default {
         this.selectAll[allname] = this.hasAllChecked(childData.children) // 子集一变动，全选重置
       }
     },
-
-    // 数据增删当前已选
+    /**
+     * 数据增删当前已选
+     * @param role
+     * @param valb
+     */
     setCheckedData(role, valb) {
       if (!role) {
         return
@@ -179,7 +218,10 @@ export default {
         this.checkedList.splice(this.hasExist(role), 1)
       }
     },
-    // 该选项是否已经存在
+    /**
+     * 判断该选项是否已经存在
+     * @param role
+     */
     hasExist(role) {
       const list = this.checkedList
       let exist = -1
@@ -192,28 +234,10 @@ export default {
       }
       return exist
     },
-    // 是否全部选中
-    hasAllChecked(list) {
-      return list.every(item => {
-        return item.checked
-      })
-    },
-    // 递归处理树结构，将树结构最后一级元素抽离出来
-    getAllLastChildrenItem(list) {
-      if (list.children.length) {
-        this.selectAll[list.id] = this.hasAllChecked(list.children)
-        for (let i = 0; i < list.children.length; i++) {
-          this.getAllLastChildrenItem(list.children[i])
-        }
-      } else {
-        if (list.checked) {
-          this.checkedList.push(list)
-        }
-      }
-      console.log(this.selectAll)
-    },
+    /**
+     * 修改提交
+     */
     submit() {
-      console.log(this.roles)
       let allNodes = []
       this.checkedList.forEach(item => {
         let temp = getParentNodes(this.roles, item.id)
@@ -221,7 +245,14 @@ export default {
           allNodes.push(temp[i])
         }
       })
-      console.log(uniqueArray(allNodes))
+
+      let params = {
+        id: this.roleId,
+        ids: uniqueArray(allNodes)
+      }
+
+      this.$emit('save-role', params)
+
     },
     handleCancel() {
       this.$emit('cancel')

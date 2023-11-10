@@ -55,7 +55,7 @@
       <el-table-column label="编辑">
         <template slot-scope="scope">
           <el-button size="mini" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="handleDel(scope.row)">删除</el-button>
+          <el-button size="mini" type="danger" @click="handleDel(scope.row.usercode)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -103,7 +103,7 @@
 </template>
 
 <script>
-import {addUser, getRoleByPage, getUserByPage, insertUserRoles, updateUser} from "../api";
+import {addUser, delUser, getRoleByPage, getUserByPage, insertUserRoles, updateUser} from "../api";
 import {compareArray} from "../utils/ArrayUtils";
 
 export default {
@@ -153,39 +153,88 @@ export default {
     }
   },
   methods: {
+    /**
+     * 初始化获取用户列表
+     */
+    getUserList() {
+      getUserByPage(this.pageParams).then((data) => {
+        let list = data.data.list
+        //后端返回的值需要转换一下，适配角色在下拉框中
+        list.map(item => {
+          if (item.roles.length === 0) {
+            item.rolesList = []
+          } else {
+            item.rolesList = []
+            item.roles.forEach(temp => {
+              if (temp) {
+                item.rolesList.push(temp.id)
+              }
+            })
+          }
+        })
+        this.tableData = list
+      })
+    },
+    /**
+     * 获取初始化的角色信息
+     */
+    getRoleList() {
+      getRoleByPage(this.pageParams).then((data) => {
+        data.data.list.forEach(item => {
+          this.options.push({value: item.id, label: item.name})
+        })
+      })
+    },
+    /**
+     * 点击添加用户时，展开dialog框
+     */
+    handleAdd() {
+      this.modalType = 0;
+      this.dialogVisible = true;
+    },
+    /**
+     * 编辑用户时，更新this.form
+     * @param val
+     */
     handleEdit(val) {
       this.modalType = 1;
       this.dialogVisible = true;
       //注意需要对数据进行深拷贝，否则会出错
       this.form = JSON.parse(JSON.stringify(val))
     },
-    handleDel() {
-      // this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-      //   confirmButtonText: '确定',
-      //   cancelButtonText: '取消',
-      //   type: 'warning'
-      // }).then(() => {
-      //   delUser({id:val.id}).then(()=>{
-      //     this.getUserList()
-      //     this.$message({
-      //       type: 'success',
-      //       message: '删除成功!'
-      //     });
-      //   })
-      // }).catch(() => {
-      //   this.$message({
-      //     type: 'info',
-      //     message: '已取消删除'
-      //   });
-      // });
+    /**
+     * 删除用户
+     */
+    handleDel(usercode) {
+      console.log(usercode)
+      this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        delUser(usercode).then(() => {
+          this.getUserList()
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
     },
-    handleAdd() {
-      this.modalType = 0;
-      this.dialogVisible = true;
-    },
+    /**
+     * dialog点击取消按钮
+     */
     cancel() {
       this.handleClose()
     },
+    /**
+     * 提交表单（增加/修改）
+     */
     submit() {
       this.$refs.form.validate((valid) => {
         if (valid) {
@@ -210,10 +259,18 @@ export default {
         }
       })
     },
+    /**
+     * 关闭dialog事对表单进行清空
+     */
     handleClose() {
       this.$refs.form.resetFields()
       this.dialogVisible = false
     },
+    /**
+     * 角色更新时的逻辑判断
+     * @param isVisible $event
+     * @param val 值
+     */
     handlerUserRolesVisibleChange(isVisible, val) {
       if (!isVisible) {
         //判断，如果rolesList中的值和role中的值相同，不发起请求
@@ -233,8 +290,11 @@ export default {
         }
       }
     },
+    /**
+     * 在dialog没有展开式，点检删除角色时，触发该方法
+     * @param val 值
+     */
     handlerUserRolesRemoveChange(val) {
-      // console.log(val)
       let params = {id: val.usercode, ids: val.rolesList}
       insertUserRoles(params).then(data => {
         if (data.code === 200) {
@@ -242,35 +302,8 @@ export default {
           this.getUserList()
         }
       })
-    },
-    getUserList() {
-      getUserByPage(this.pageParams).then((data) => {
-        let list = data.data.list
-        list.map(item => {
-          if (item.roles.length === 0) {
-            item.rolesList = []
-          } else {
-            item.rolesList = []
-            item.roles.forEach(temp => {
-              if (temp) {
-                item.rolesList.push(temp.id)
-              }
-            })
-          }
-        })
-        // console.log(list)
-        this.tableData = list
-      })
-    },
-    getRoleList() {
-      getRoleByPage(this.pageParams).then((data) => {
-        data.data.list.forEach(item => {
-          this.options.push({value: item.id, label: item.name})
-        })
-      })
     }
   },
-  computed: {},
   mounted() {
     this.getUserList()
     this.getRoleList()

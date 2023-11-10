@@ -1,13 +1,11 @@
-import Cookie from "js-cookie";
-
 export function getChildrenPath(router) {
-  let menus = JSON.parse(Cookie.get('menu'))
+  let menus = JSON.parse(localStorage.getItem('menu'))
   const routerList = []
   menus.forEach(me => {
     setChild(me, routerList, '', '')
   })
   routerList.forEach(item => {
-    router.addRoute('Main', item)
+    router.addRoute('main', item)
   })
 }
 

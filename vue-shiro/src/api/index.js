@@ -54,6 +54,15 @@ export const addUser = (data) => {
   return http.post('/user', data)
 }
 
+/**
+ * 删除用户
+ * @param params
+ * @returns
+ */
+export const delUser = (params) => {
+  return http.delete(`/user?usercode=${params}`)
+}
+
 
 /**
  * 修改用户角色
@@ -67,8 +76,18 @@ export const insertUserRoles = (data) => {
 /**
  * 根据
  * @param params
- * @returns {Promise<axios.AxiosResponse<any>>}
+ * @returns
  */
 export const getPermissionByRoleId = (params) => {
   return http.get(`/permission/getPermissionByRoleId?roleId=${params}`)
 }
+
+/**
+ * 添加角色权限
+ * @param data
+ * @returns
+ */
+export const insetRolePermission = (data) => {
+  return http.post("/role/insetRolePermission", data)
+}
+

@@ -23,7 +23,6 @@
 </template>
 
 <script>
-import Cookie from "js-cookie";
 
 export default {
   data() {
@@ -36,15 +35,10 @@ export default {
     lagOut() {
       sessionStorage.removeItem('Authorization')
       sessionStorage.removeItem('refreshToken')
-      Cookie.remove('menu')
+      localStorage.removeItem('menu')
       this.$router.push('/login')
     }
-  },
-  // computed: {
-  //   ...mapState({
-  //     tags: state => state.tab.tableList
-  //   })
-  // }
+  }
 }
 </script>
 

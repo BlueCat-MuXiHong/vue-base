@@ -1,8 +1,8 @@
 <template>
   <div>
     <el-table
-      :data="tableData" border
-      style="width: 100%">
+        :data="tableData" border
+        style="width: 100%">
       <el-table-column label="序号" type="index"></el-table-column>
       <el-table-column label="角色名" prop="name"></el-table-column>
       <el-table-column label="角色描述" prop="description"></el-table-column>
@@ -12,11 +12,11 @@
       <el-table-column align="center" label="是否启用">
         <template slot-scope="scope">
           <el-switch
-            v-model="scope.row.lock"
-            :active-value="1"
-            :inactive-value="0"
-            active-color="#13ce66"
-            inactive-color="#ff4949">
+              v-model="scope.row.lock"
+              :active-value="1"
+              :inactive-value="0"
+              active-color="#13ce66"
+              inactive-color="#ff4949">
           </el-switch>
         </template>
       </el-table-column>
@@ -29,10 +29,10 @@
       </el-table-column>
     </el-table>
     <el-dialog
-      :before-close="handleClose"
-      :title="modalType===0?'新增':'修改'"
-      :visible.sync="dialogVisibleRole"
-      width="50%">
+        :before-close="handleClose"
+        :title="modalType===0?'新增':'修改'"
+        :visible.sync="dialogVisibleRole"
+        width="50%">
       <el-form ref="form" :inline="true" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="账号" prop="username">
           <el-input v-model="form.username" placeholder="请输入账号"></el-input>
@@ -51,10 +51,10 @@
         </el-form-item>
         <el-form-item label="出生日期" prop="birthday">
           <el-date-picker
-            v-model="form.birthday"
-            placeholder="选择日期"
-            type="date"
-            value-format="yyyy-MM-DD"
+              v-model="form.birthday"
+              placeholder="选择日期"
+              type="date"
+              value-format="yyyy-MM-DD"
           >
           </el-date-picker>
         </el-form-item>
@@ -63,20 +63,20 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
+                <el-button @click="handleClose">取 消</el-button>
                 <el-button type="primary" @click="submit">确 定</el-button>
-                <el-button @click="cancel">取 消</el-button>
             </span>
     </el-dialog>
     <el-dialog :visible.sync="dialogVisiblePermission" width="50%">
       <Detail
-        :roles="rolePermission">
+          :roleId="roleId" :roles="rolePermission" @cancel='cancel' @save-role="saveRole">
       </Detail>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import {getPermissionByRoleId, getRoleByPage} from "../api";
+import {getPermissionByRoleId, getRoleByPage, insetRolePermission} from "../api";
 import Detail from "../components/Detail.vue";
 
 export default {
@@ -106,6 +106,7 @@ export default {
       dialogVisibleRole: false,
       dialogVisiblePermission: false,
       rolePermission: [],
+      roleId: '',
       rules: {
         username: [
           {required: true, message: '请输入账号', trigger: 'blur'},
@@ -166,8 +167,7 @@ export default {
      * 作用于新增或编辑时的取消按钮
      */
     cancel() {
-      this.$refs.form.resetFields();
-      this.dialogVisibleRole = false;
+      this.dialogVisiblePermission = false
     },
     /**
      * 根据角色id获取权限信息
@@ -176,6 +176,7 @@ export default {
     getPermission(roleId) {
       getPermissionByRoleId(roleId).then(data => {
         this.rolePermission = data.data
+        this.roleId = roleId
       })
     },
     /**
@@ -185,6 +186,16 @@ export default {
     handleRolePermission(roleId) {
       this.getPermission(roleId);
       this.dialogVisiblePermission = true
+    },
+    saveRole(data) {
+      console.log(data)
+      insetRolePermission(data).then(data => {
+        if (data.code === 200) {
+          this.$message.success("修改成功")
+          this.getRoles()
+        }
+      })
+      this.dialogVisiblePermission = false;
     },
   },
   mounted() {
