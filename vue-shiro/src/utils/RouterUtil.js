@@ -1,5 +1,5 @@
-export function getChildrenPath(router) {
-  let menus = JSON.parse(localStorage.getItem('menu'))
+export function getChildrenPath(menusData, router) {
+  let menus = JSON.parse(localStorage.getItem('menu')) || menusData
   const routerList = []
   menus.forEach(me => {
     setChild(me, routerList, '', '')

@@ -55,7 +55,7 @@ export default {
     }
   }, computed: {
     menu() {
-      return JSON.parse(localStorage.getItem('menu') || this.$store.state.tab.menu)
+      return this.$store.state.tab.menu || JSON.parse(localStorage.getItem('menu'))
     },
     noChildren() {
       console.log(this.menu)

@@ -50,7 +50,6 @@ export default {
               //   this.$message.success("登录成功")
               //   this.$router.push("/main")
               // })
-
             } else {
               this.$message.error(data.data.message)
             }
@@ -61,12 +60,15 @@ export default {
     menuFormat() {
       getMenu().then(data => {
         //处理数据
-        console.log('allMenu', data.data)
         //存储两份，1.份存储在local,一份在store
-        localStorage.setItem('menu', JSON.stringify(data.data))
-        this.$store.commit('setMenu', data.data)
-        this.$message.success("登录成功")
-        this.$router.push("/main")
+        if (data.code === 200) {
+          localStorage.setItem('menu', JSON.stringify(data.data))
+          this.$store.commit('setMenu', data.data)
+          this.$message.success("登录成功")
+          this.$router.push("/main")
+        } else {
+          this.$message.error("失败")
+        }
       })
     }
   }

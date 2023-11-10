@@ -11,7 +11,7 @@ export default {
       localStorage.setItem('menu', JSON.stringify(state.menu))
     },
     addMenu(state, router) {
-      getChildrenPath(router)
+      getChildrenPath(state.menu, router)
     },
     collapseMenu(state) {
       state.collapseMenu = !state.collapseMenu
