@@ -22,21 +22,21 @@
                 <div class="content-wrapper">
                   <div v-for="(level2, index2) in level1.children" :key="index2" class="level2" style="display: flex;">
                     <div class="level2-name" style="flex: none;width: 170px;">{{ level2.name }}</div>
+
                     <div class="content-children">
-                      <div class="level3" style="display: flex;flex-wrap: wrap;">
+                      <div class="level4" style="display: flex;flex-wrap: wrap;">
                         <div class="roles_check">
-                                <span v-if="level2.children && level2.children.length">
+                            <span v-if="level2.children && level2.children.length">
                                   <el-checkbox
                                       :key="level2.id"
                                       v-model="selectAll[level2.id]"
-                                      @change="selectColumn(level2.children,$event,{},'all',level2.id)"
-                                  >
+                                      @change="selectColumn(level2.children,$event,{},'all',level2.id)">
                                     全选
                                   </el-checkbox>
                                 </span>
                           <span v-else>无</span>
                         </div>
-                        <div v-for="(model,index) in level2.children" :key="index">
+                        <div v-for="(model,index) in level2.children" :key="index" class>
                           <div v-if="model.name !=='标识页面权限' " class="roles_check">
                             <el-checkbox
                                 v-model="model.checked"
@@ -83,7 +83,6 @@ export default {
     return {
       filterIdLength: 6,
       checkedList: [],
-      roleTypeAllList: new Map(), // 全部按钮权限
       selectAll: {},
       ruleForm: {
         name: '',
@@ -94,8 +93,9 @@ export default {
     }
   },
   mounted() {
+    console.log(this.roles)
     this.setCheckedItems(this.roles) // 菜单按钮权限
-    this.getMapRoleTypeAllList(this.roles)
+    console.log('执行完毕')
   },
   methods: {
     /**
@@ -113,7 +113,8 @@ export default {
      */
     getAllLastChildrenItem(list) {
       if (list.children.length) {
-        this.selectAll[list.id] = this.hasAllChecked(list.children)
+        this.$set(this.selectAll, list.id, this.hasAllChecked(list.children))
+        // this.selectAll[list.id] = this.hasAllChecked(list.children)
         for (let i = 0; i < list.children.length; i++) {
           this.getAllLastChildrenItem(list.children[i])
         }
@@ -133,20 +134,6 @@ export default {
       })
     },
     /**
-     * 抽取全部按钮权限
-     * @param list
-     */
-    getMapRoleTypeAllList(list) {
-      list.forEach((item) => {
-        if (item.children && item.children.length > 0) {
-          if (item.id.length === this.filterIdLength) {
-            this.roleTypeAllList.set(item.id, (this.roleTypeAllList.get(item.id)) || item.children)
-          }
-          this.getMapRoleTypeAllList(item.children)
-        }
-      })
-    },
-    /**
      * 全选-菜单按钮权限
      * @param data
      * @param valb
@@ -155,11 +142,9 @@ export default {
      * @param allname
      */
     selectColumn(data = [], valb, childData, key, allname) {
-      console.log(this.selectAll)
       // 全选 涉及到数据记录的更改、单选的变动
       if (key === 'all') {
         this.selectAll[allname] = valb
-        console.log(this.selectAll)
         for (let i = 0; i < data.length; i++) {
           data[i].checked = valb
           this.setCheckedData(data[i], valb)
@@ -368,16 +353,14 @@ td
 .level2-name
   padding 10px 0
 
-.level3, .level4
+.level4
   border-left solid 1px #ebebeb
 
 .level2:not(:last-child)
   border-bottom solid 1px #ebebeb
 
-.level3:not(:last-child)
-  border-bottom solid 1px #ebebeb
 
-.level2, .level3, .level4
+.level2, .level4
   align-items center
 
 .roles_roles

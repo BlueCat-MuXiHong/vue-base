@@ -68,7 +68,7 @@
             </span>
     </el-dialog>
     <el-dialog :visible.sync="dialogVisiblePermission" width="50%">
-      <Detail
+      <Detail v-if="dialogVisiblePermission"
           :roleId="roleId" :roles="rolePermission" @cancel='cancel' @save-role="saveRole">
       </Detail>
     </el-dialog>
@@ -170,22 +170,15 @@ export default {
       this.dialogVisiblePermission = false
     },
     /**
-     * 根据角色id获取权限信息
-     * @param roleId
-     */
-    getPermission(roleId) {
-      getPermissionByRoleId(roleId).then(data => {
-        this.rolePermission = data.data
-        this.roleId = roleId
-      })
-    },
-    /**
      * 打开dialog并将当前的权限信息更新
      * @param roleId
      */
     handleRolePermission(roleId) {
-      this.getPermission(roleId);
-      this.dialogVisiblePermission = true
+      getPermissionByRoleId(roleId).then(data => {
+        this.rolePermission = data.data
+        this.roleId = roleId
+        this.dialogVisiblePermission = true
+      })
     },
     saveRole(data) {
       insetRolePermission(data).then(data => {
@@ -204,174 +197,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.roles-box {
-  height: 75vh;
-
-  .button_list {
-    margin-top: 24px;
-
-    & > .el-button + .el-button {
-      margin-left: 10px;
-    }
-  }
 
 
-  .content-children {
-    width: 100%;
-  }
-
-  .role-name {
-    margin-top: 20px;
-
-    & span {
-      padding-right: 15px;
-      width: 70px;
-      color: #606266;
-      font-size: 14px;
-      line-height: 38px;
-    }
-
-    & input {
-      box-sizing: border-box;
-      padding: 0 15px;
-      width: calc(100% - 95px);
-      height: 38px;
-      outline: none;
-      border: 1px solid #ebebeb;
-      border-radius: 19px;
-      background: rgba(245, 248, 253, 1);
-      font-size: 15px;
-    }
-  }
-
-  .role-all_show {
-    margin-bottom: 15px;
-    color: #303133;
-    font-size: 16px;
-  }
-
-  .table-head {
-    display: flex;
-    align-items: center;
-    box-sizing: border-box;
-    width: 100%;
-    height: 40px;
-    border: 1px solid #ebebeb;
-    font-size: 16px;
-
-    > div {
-      &:first-child,
-      &:nth-child(2),
-      &:nth-child(3),
-      &:nth-child(4) {
-        width: 170px;
-        text-align: center;
-      }
-
-      &:last-child {
-        flex: 1;
-        text-align: center;
-      }
-    }
-  }
-
-  table {
-    margin: 0 0 2px 0;
-    padding: 0;
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  tr td {
-    margin: 0;
-    padding: 0;
-  }
-
-  .title-about__model {
-    width: 170px;
-    text-align: center;
-  }
-
-  .title-about__name {
-    border-top: solid 1px #ebebeb;
-    border-left: solid 1px #ebebeb;
-  }
-
-  .roles_list {
-    display: flex;
-    width: 100%;
-  }
-
-  .roles_pege {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 30px 10px;
-    width: 170px;
-    border-top: solid 1px #ebebeb;
-    border-left: solid 1px #ebebeb;
-  }
-
-  td {
-    border-right: solid 1px #ebebeb;
-    border-bottom: solid 1px #ebebeb;
-    border-left: solid 1px #ebebeb;
-  }
-
-  .level1 {
-    padding: 10px 0;
-  }
-
-  .level2-name {
-    padding: 10px 0;
-  }
-
-  .level3, .level4 {
-    border-left: solid 1px #ebebeb;
-  }
-
-  .level2:not(:last-child) {
-    border-bottom: solid 1px #ebebeb;
-  }
-
-  .level3:not(:last-child) {
-    border-bottom: solid 1px #ebebeb;
-  }
-
-  .level2, .level3, .level4 {
-    align-items: center;
-  }
-
-  .roles_roles {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    width: calc(100% - 170px);
-    border-top: solid 1px #ebebeb;
-    border-right: solid 1px #ebebeb;
-    border-left: solid 1px #ebebeb;
-  }
-
-  .roles_check {
-    padding: 10px;
-  }
-
-  .role-modal-footer {
-    display: flex;
-    justify-content: center;
-    margin-top: 15px;
-    width: 100%;
-  }
-
-  .role-table-wrapper {
-    height: 55vh;
-    border-bottom: solid 1px #ebebeb;
-  }
-
-  .role-table__scrollbar {
-    overflow: hidden;
-    width: 100%;
-    height: 99%;
-  }
-}
 </style>
