@@ -14,7 +14,9 @@
     </div>
     <el-table
       :data="tableData" border
-      style="width: 100%">
+      style="width: 100%"
+      :header-cell-style="{'text-align':'center'}"
+      :cell-style="{'text-align':'center'}">
       <el-table-column label="序号" type="index"></el-table-column>
       <el-table-column label="账号" prop="username"></el-table-column>
       <el-table-column label="姓名" prop="realname"></el-table-column>

@@ -1,8 +1,10 @@
 <template>
   <div>
     <el-table
-        :data="tableData" border
-        style="width: 100%">
+      :data="tableData" border
+      style="width: 100%"
+      :header-cell-style="{'text-align':'center'}"
+      :cell-style="{'text-align':'center'}">
       <el-table-column label="序号" type="index"></el-table-column>
       <el-table-column label="角色名" prop="name"></el-table-column>
       <el-table-column label="角色描述" prop="description"></el-table-column>
@@ -12,11 +14,11 @@
       <el-table-column align="center" label="是否启用">
         <template slot-scope="scope">
           <el-switch
-              v-model="scope.row.lock"
-              :active-value="1"
-              :inactive-value="0"
-              active-color="#13ce66"
-              inactive-color="#ff4949">
+            v-model="scope.row.lock"
+            :active-value="1"
+            :inactive-value="0"
+            active-color="#13ce66"
+            inactive-color="#ff4949">
           </el-switch>
         </template>
       </el-table-column>
@@ -29,10 +31,10 @@
       </el-table-column>
     </el-table>
     <el-dialog
-        :before-close="handleClose"
-        :title="modalType===0?'新增':'修改'"
-        :visible.sync="dialogVisibleRole"
-        width="50%">
+      :before-close="handleClose"
+      :title="modalType===0?'新增':'修改'"
+      :visible.sync="dialogVisibleRole"
+      width="50%">
       <el-form ref="form" :inline="true" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="账号" prop="username">
           <el-input v-model="form.username" placeholder="请输入账号"></el-input>
@@ -51,10 +53,10 @@
         </el-form-item>
         <el-form-item label="出生日期" prop="birthday">
           <el-date-picker
-              v-model="form.birthday"
-              placeholder="选择日期"
-              type="date"
-              value-format="yyyy-MM-DD"
+            v-model="form.birthday"
+            placeholder="选择日期"
+            type="date"
+            value-format="yyyy-MM-DD"
           >
           </el-date-picker>
         </el-form-item>
@@ -69,7 +71,7 @@
     </el-dialog>
     <el-dialog :visible.sync="dialogVisiblePermission" width="50%">
       <Detail v-if="dialogVisiblePermission"
-          :roleId="roleId" :roles="rolePermission" @cancel='cancel' @save-role="saveRole">
+              :roleId="roleId" :roles="rolePermission" @cancel='cancel' @save-role="saveRole">
       </Detail>
     </el-dialog>
   </div>
