@@ -1,52 +1,33 @@
 import axios from 'axios'
-import { MessageBox, Message } from 'element-ui'
+import {Message, MessageBox} from 'element-ui'
 import store from '@/store'
-import { getToken } from '@/utils/auth'
+import {getToken} from '@/utils/auth'
+import qs from "qs";
 
 // create an axios instance
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 5000 // request timeout
+  timeout: 15000 // request timeout
 })
 
 // request interceptor
-service.interceptors.request.use(
-  config => {
-    // do something before request is sent
-
+service.interceptors.request.use(config => {
     if (store.getters.token) {
-      // let each request carry token
-      // ['X-Token'] is a custom headers key
-      // please modify it according to the actual situation
-      config.headers['X-Token'] = getToken()
+      config.headers['token'] = getToken()
     }
     return config
   },
   error => {
-    // do something with request error
-    console.log(error) // for debug
     return Promise.reject(error)
   }
 )
 
-// response interceptor
-service.interceptors.response.use(
-  /**
-   * If you want to get http information such as headers or status
-   * Please return  response => response
-   */
 
-  /**
-   * Determine the request status by custom code
-   * Here is just an example
-   * You can also judge the status by HTTP Status Code
-   */
-  response => {
+service.interceptors.response.use(response => {
     const res = response.data
 
-    // if the custom code is not 20000, it is judged as an error.
-    if (res.code !== 20000) {
+    if (res.code !== 200) {
       Message({
         message: res.message || 'Error',
         type: 'error',
@@ -82,4 +63,102 @@ service.interceptors.response.use(
   }
 )
 
-export default service
+//请求方法
+const http = {
+  post(url, params) {
+    return service.post(url, params, {
+      transformRequest: [(params) => {
+        return JSON.stringify(params)
+      }],
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+  },
+  put(url, params) {
+    return service.put(url, params, {
+      transformRequest: [(params) => {
+        return JSON.stringify(params)
+      }],
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+  },
+  get(url, params) {
+    return service.get(url, {
+      params: params,
+      paramsSerializer: (params) => {
+        return qs.stringify(params)
+      }
+    })
+  }, getRestApi(url, params) {
+    let _params
+    if (Object.is(params, undefined || null)) {
+      _params = ''
+    } else {
+      _params = '/'
+      for (const key in params) {
+        console.log(key)
+        console.log(params[key])
+        if (params.hasOwnProperty(key) && params[key] !== null && params[key]
+          !== '') {
+          _params += `${params[key]}/`
+        }
+      }
+      _params = _params.substr(0, _params.length - 1)
+    }
+    console.log(_params)
+    if (_params) {
+      return service.get(`${url}${_params}`)
+    } else {
+      return service.get(url)
+    }
+  },
+  delete(url, params) {
+    let _params
+    if (Object.is(params, undefined || null)) {
+      _params = ''
+    } else {
+      _params = '/'
+      for (const key in params) {
+// eslint-disable-next-line no-prototype-builtins
+        if (params.hasOwnProperty(key) && params[key] !== null && params[key]
+          !== '') {
+          _params += `${params[key]}/`
+        }
+      }
+      _params = _params.substr(0, _params.length - 1)
+    }
+    if (_params) {
+      return service.delete(`${url}${_params}`).catch(err => {
+        message.error(err.msg)
+        return Promise.reject(err)
+      })
+    } else {
+      return service.delete(url).catch(err => {
+        message.error(err.msg)
+        return Promise.reject(err)
+      })
+    }
+  }, upload(url, params) {
+    return service.post(url, params, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+  },
+  login(url, params) {
+    return service.post(url, params, {
+      transformRequest: [(params) => {
+        return qs.stringify(params)
+      }],
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+  }
+}
+
+
+export default http

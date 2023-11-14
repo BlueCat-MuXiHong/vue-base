@@ -1,5 +1,9 @@
 <template>
   <div class="login-container">
+    <!--
+      "autocomplete"属性：用于设置表单的自动完成功能，可以是"on"、"off"等。
+      "label-position"属性：用于设置表单标签的位置，可以是"left"、"right"等。
+    -->
     <el-form
       ref="loginForm"
       :model="loginForm"
@@ -8,15 +12,24 @@
       autocomplete="on"
       label-position="left"
     >
-
+      <!--输入框标题-->
       <div class="title-container">
         <h3 class="title">Login Form</h3>
       </div>
-
+      <!--用户名输入框-->
       <el-form-item prop="username">
         <span class="svg-container">
-          <svg-icon icon-class="user" />
+          <svg-icon icon-class="user"/>
         </span>
+        <!--
+          "ref"属性：用于给输入框添加一个引用，可以通过该引用在Vue实例中访问到输入框的DOM元素。
+          "v-model"属性：用于双向绑定输入框的值和Vue实例中的数据模型。当用户在输入框中输入内容时，该值会实时更新，反之亦然。
+          "placeholder"属性：用于设置输入框的占位符文本，当输入框为空时，会显示该文本。
+          "name"属性：用于设置输入框的名称，在提交表单时，该名称会作为键名，对应输入框的值会被发送到服务器。
+          "type"属性：用于设置输入框的类型，可以是"text"、"password"、"number"等。
+          "tabindex"属性：用于设置输入框的Tab键顺序，可以是数字或"auto"。
+          "autocomplete"属性：用于设置输入框的自动完成功能，可以是"on"、"off"等。
+        -->
         <el-input
           ref="username"
           v-model="loginForm.username"
@@ -28,10 +41,10 @@
         />
       </el-form-item>
 
-      <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
+      <el-tooltip v-model="capsTooltip" content="大写锁已打开" manual placement="right">
         <el-form-item prop="password">
           <span class="svg-container">
-            <svg-icon icon-class="password" />
+            <svg-icon icon-class="password"/>
           </span>
           <el-input
             :key="passwordType"
@@ -47,53 +60,32 @@
             @keyup.enter.native="handleLogin"
           />
           <span class="show-pwd" @click="showPwd">
-            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"/>
           </span>
         </el-form-item>
       </el-tooltip>
 
-      <el-button
-        :loading="loading"
-        type="primary"
-        style="width:100%;margin-bottom:30px;"
-        @click.native.prevent="handleLogin"
-      >Login
+      <el-button :loading="loading" style="width:100%;margin-bottom:30px;" type="primary"
+                 @click.native.prevent="handleLogin">Login
       </el-button>
-
-      <div style="position:relative">
-        <div class="tips">
-          <span>Username : admin</span>
-          <span>Password : any</span>
-        </div>
-        <div class="tips">
-          <span style="margin-right:18px;">Username : editor</span>
-          <span>Password : any</span>
-        </div>
-
-        <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
-          Or connect with
-        </el-button>
-      </div>
     </el-form>
-
-    <el-dialog title="Or connect with" :visible.sync="showDialog">
-      Can not be simulated on local, so please combine you own business simulation! ! !
-      <br>
-      <br>
-      <br>
-      <social-sign />
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
+import {validUsername} from '@/utils/validate'
 import SocialSign from './components/SocialSignin'
 
 export default {
   name: 'Login',
-  components: { SocialSign },
+  components: {SocialSign},
   data() {
+    /**
+     * 校验用户名
+     * @param rule 规则
+     * @param value
+     * @param callback
+     */
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
         callback(new Error('Please enter the correct user name'))
@@ -101,6 +93,12 @@ export default {
         callback()
       }
     }
+    /**
+     * 校验密码
+     * @param rule
+     * @param value
+     * @param callback
+     */
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
         callback(new Error('The password can not be less than 6 digits'))
@@ -109,52 +107,66 @@ export default {
       }
     }
     return {
+      // 登录表单对象
       loginForm: {
         username: 'admin',
-        password: '111111'
+        password: '123456'
       },
+      // 验证规则
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        username: [{required: true, trigger: 'blur', validator: validateUsername}],
+        password: [{required: true, trigger: 'blur', validator: validatePassword}]
       },
-      passwordType: 'password',
-      capsTooltip: false,
+
+      passwordType: 'password', //密码输入框的类型
+      capsTooltip: false, //大写锁
       loading: false,
-      showDialog: false,
       redirect: undefined,
       otherQuery: {}
     }
   },
-  watch: {
-    $route: {
-      handler: function(route) {
-        const query = route.query
-        if (query) {
-          this.redirect = query.redirect
-          this.otherQuery = this.getOtherQuery(query)
-        }
-      },
-      immediate: true
-    }
-  },
-  created() {
-    // window.addEventListener('storage', this.afterQRScan)
-  },
+  /**
+   *
+   * 这是一个Vue.js的watch选项，用于监听路由参数的变化。
+   * 当路由参数发生变化时，该函数会被调用。在这个函数中，
+   * 首先获取路由参数中的query对象，然后判断该对象是否存在。
+   * 如果存在，就将该对象的redirect属性赋值给Vue实例的redirect属性，
+   * 并将该对象的其他属性赋值给Vue实例的otherQuery属性。
+   * 最后，immediate选项表示该函数会在组件挂载后立即执行一次。
+   */
+  // watch: {
+  //   $route: {
+  //     handler: function (route) {
+  //       const query = route.query
+  //       if (query) {
+  //         this.redirect = query.redirect
+  //         this.otherQuery = this.getOtherQuery(query)
+  //       }
+  //     },
+  //     immediate: true
+  //   }
+  // },
   mounted() {
+    //如果登录输入框为空，则把焦点聚焦到输入框上
     if (this.loginForm.username === '') {
       this.$refs.username.focus()
+      //如果密码输入框为空，则把焦点聚焦到输入框上
     } else if (this.loginForm.password === '') {
       this.$refs.password.focus()
     }
   },
-  destroyed() {
-    // window.removeEventListener('storage', this.afterQRScan)
-  },
   methods: {
+    /**
+     * 判断大写锁是否打开
+     * @param e
+     */
     checkCapslock(e) {
-      const { key } = e
+      const {key} = e
       this.capsTooltip = key && key.length === 1 && (key >= 'A' && key <= 'Z')
     },
+    /**
+     * 是否显示密码
+     */
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -166,15 +178,22 @@ export default {
       })
     },
     handleLogin() {
+      //表单验证
       this.$refs.loginForm.validate(valid => {
+        //验证通过
         if (valid) {
+          //开启进度条
           this.loading = true
+          //调用src/store/modules/user.js中的login方法
           this.$store.dispatch('user/login', this.loginForm)
             .then(() => {
-              this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+              //路由转发到指定地址
+              this.$router.push({path: this.redirect || '/', query: this.otherQuery})
+              //关闭进度条
               this.loading = false
             })
             .catch(() => {
+              //关闭进度条
               this.loading = false
             })
         } else {
@@ -191,32 +210,11 @@ export default {
         return acc
       }, {})
     }
-    // afterQRScan() {
-    //   if (e.key === 'x-admin-oauth-code') {
-    //     const code = getQueryObject(e.newValue)
-    //     const codeMap = {
-    //       wechat: 'code',
-    //       tencent: 'code'
-    //     }
-    //     const type = codeMap[this.auth_type]
-    //     const codeName = code[type]
-    //     if (codeName) {
-    //       this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
-    //         this.$router.push({ path: this.redirect || '/' })
-    //       })
-    //     } else {
-    //       alert('第三方登录失败')
-    //     }
-    //   }
-    // }
   }
 }
 </script>
 
 <style lang="scss">
-/* 修复input 背景不协调 和光标变色 */
-/* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
-
 $bg: #283443;
 $light_gray: #fff;
 $cursor: #fff;
