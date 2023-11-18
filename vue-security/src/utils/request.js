@@ -53,7 +53,6 @@ service.interceptors.response.use(response => {
     }
   },
   error => {
-    console.log('err' + error) // for debug
     Message({
       message: error.message,
       type: 'error',
@@ -99,8 +98,6 @@ const http = {
     } else {
       _params = '/'
       for (const key in params) {
-        console.log(key)
-        console.log(params[key])
         if (params.hasOwnProperty(key) && params[key] !== null && params[key]
           !== '') {
           _params += `${params[key]}/`
@@ -108,7 +105,6 @@ const http = {
       }
       _params = _params.substr(0, _params.length - 1)
     }
-    console.log(_params)
     if (_params) {
       return service.get(`${url}${_params}`)
     } else {
