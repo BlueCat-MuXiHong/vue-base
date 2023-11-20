@@ -31,7 +31,7 @@
       <el-table-column label="所属部门" prop="parentName"></el-table-column>
       <el-table-column label="部门电话" prop="phone"></el-table-column>
       <el-table-column label="部门地址" prop="address"></el-table-column>
-      <el-table-column label="操作">
+      <el-table-column align="center" label="操作">
         <template slot-scope="scope">
           <el-button
             icon="el-icon-edit-outline"
@@ -262,7 +262,6 @@ export default {
      * 树节点点击事件
      */
     handleNodeClick(data) {
-      console.log(data)
       data.open = !data.open
       //当点击树节点时，赋予选中的值
       this.dept.pid = data.id;

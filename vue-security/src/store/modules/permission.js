@@ -77,7 +77,7 @@ const actions = {
   generateRoutes({commit}, roles) {
     return new Promise((resolve, reject) => {
       getMenuList().then(res => {
-        console.log(res)
+        // console.log(res)
         //存放对应权限的路由信息
         let accessedRoutes
         //判断状态码是否为200
