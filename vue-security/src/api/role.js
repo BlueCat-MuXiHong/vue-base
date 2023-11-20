@@ -1,38 +1,42 @@
-import request from '@/utils/request'
+import http from '@/utils/request'
 
 export function getRoutes() {
-  return request({
-    url: '/vue-element-admin/routes',
-    method: 'get'
-  })
+
 }
 
-export function getRoles() {
-  return request({
-    url: '/vue-element-admin/roles',
-    method: 'get'
-  })
+/**
+ * 查询角色列表
+ * @param data
+ * @returns
+ */
+export async function getRoles(data) {
+  return http.post('/role/list', data)
+
 }
 
 export function addRole(data) {
-  return request({
-    url: '/vue-element-admin/role',
-    method: 'post',
-    data
-  })
+  return http.post("/role/add", data);
 }
 
 export function updateRole(id, data) {
-  return request({
-    url: `/vue-element-admin/role/${id}`,
-    method: 'put',
-    data
-  })
+
 }
 
-export function deleteRole(id) {
-  return request({
-    url: `/vue-element-admin/role/${id}`,
-    method: 'delete'
-  })
+/**
+ * 删除用户
+ * @param params
+ * @returns
+ */
+export function deleteRole(params) {
+  return http.delete('/role/delete', params)
 }
+
+/**
+ * 检查角色是否被使用
+ * @param params
+ * @returns
+ */
+export function checkRole(params) {
+  return http.getRestApi('/role/check', params)
+}
+

@@ -25,6 +25,10 @@ const mutations = {
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
+  },
+  //将用户id保存到store中
+  SET_USERID: (state, userId) => {
+    state.userId = userId
   }
 }
 
@@ -53,8 +57,8 @@ const actions = {
         if (!data) {
           reject('Verification failed, please Login again.')
         }
-
-        const { roles, name, avatar, introduction } = data
+        //从后端返回的数据中解构出用户id
+        const {roles, name, avatar, introduction, id} = data
 
         // roles must be a non-empty array
         if (!roles || roles.length <= 0) {
@@ -65,6 +69,8 @@ const actions = {
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
         commit('SET_INTRODUCTION', introduction)
+        //将用户id保存到vuex中
+        commit('SET_USERID', id)
         resolve(data)
       }).catch(error => {
         reject(error)

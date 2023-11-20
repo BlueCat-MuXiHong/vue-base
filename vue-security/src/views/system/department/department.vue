@@ -7,7 +7,7 @@
       </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="search">查询</el-button>
-        <el-button icon="el-icon-refresh-right">重置</el-button>
+        <el-button icon="el-icon-refresh-right" @click="resetValue">重置</el-button>
         <el-button icon="el-icon-plus" type="success" @click="openAddWindow">新增</el-button>
       </el-form-item>
     </el-form>
@@ -302,6 +302,11 @@ export default {
           }
         }
       }
+    },
+    resetValue() {
+      //清空数据
+      this.searchModel.departmentName = ''
+      this.search()
     }
   }, created() {
     //初始化时调用获取部门的数据
