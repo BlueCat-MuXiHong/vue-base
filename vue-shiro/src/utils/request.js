@@ -48,6 +48,7 @@ http.interceptors.response.use(
               sessionStorage.removeItem("Authorization");
               sessionStorage.removeItem("refreshToken");
               location.href = '/login';
+              this.route.push('/login')
             } else if (res.data.code === 200) {
               //刷新成功之后，将新的token存起来
               sessionStorage.setItem("Authorization", res.data.data.access_token)

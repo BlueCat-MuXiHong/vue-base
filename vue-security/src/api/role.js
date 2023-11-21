@@ -18,8 +18,8 @@ export function addRole(data) {
   return http.post("/role/add", data);
 }
 
-export function updateRole(id, data) {
-
+export function updateRole(data) {
+  return http.put('role/update', data)
 }
 
 /**
@@ -39,4 +39,23 @@ export function deleteRole(params) {
 export function checkRole(params) {
   return http.getRestApi('/role/check', params)
 }
+
+/**
+ * 查询分配权限树列表
+ * @returns
+ */
+export async function getAssignTree(params) {
+  return http.get("/role/getAssignPermissionTree", params);
+}
+
+/**
+ * 分配权限
+ * @returns
+ */
+export async function assignSave(params) {
+  return http.post("/role/saveRoleAssign", params);
+}
+
+
+
 
