@@ -98,4 +98,14 @@ export async function saveUserRole(data) {
 }
 
 
+/**
+ * 刷新token
+ * @param data
+ * @returns
+ */
+export async function refreshToken(data) {
+  return http.post('/sysUser/refreshToken', data)
+}
+
+
 
