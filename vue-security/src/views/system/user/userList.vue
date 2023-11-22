@@ -61,6 +61,7 @@
           </el-button>
           <el-button icon="el-icon-delete" @click="resetValue()">重置</el-button>
           <el-button icon="el-icon-plus" size="small" type="success"
+                     v-if="hasPermission('sys:user:add')"
                      @click="openAddWindow()">新增
           </el-button>
         </el-form-item>

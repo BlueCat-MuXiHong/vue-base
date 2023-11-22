@@ -21,6 +21,12 @@ import myConfirm from '@/utils/myConfirm'
 import resetForm from '@/utils/resetForm'
 //导入快速复制对象工具
 import objCopy from '@/utils/objCopy'
+
+//导入按钮权限判断
+import hasPermission from '@/permission/index'
+
+Vue.prototype.hasPermission = hasPermission;
+
 //交给原型
 Vue.prototype.$myconfirm = myConfirm;
 Vue.prototype.$resetForm = resetForm;
