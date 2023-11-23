@@ -1,12 +1,14 @@
-import {getInfo, login, logout} from '@/api/user'
-import {getToken, removeToken, setToken} from '@/utils/auth'
-import {resetRouter} from '@/router'
+import { getInfo, login, logout } from '@/api/user'
+import { getToken, removeToken, setToken } from '@/utils/auth'
+import { resetRouter } from '@/router'
+import store from '@/store'
 
 const getDefaultState = () => {
   return {
     token: getToken(),
     name: '',
-    avatar: ''
+    avatar: '',
+    roles:[]
   }
 }
 
@@ -24,18 +26,26 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
+  },
+  //设置角色
+  SET_ROLES: (state, roles) => {
+    state.roles = roles
   }
 }
 
 const actions = {
   // user login
-  login({commit}, userInfo) {
-    const {username, password} = userInfo
+  login({ commit }, userInfo) {
+    //解析出用户名和密码
+    const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      login({username: username.trim(), password: password}).then(response => {
-        const {data} = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
+      //登录
+      login({ username: username.trim(), password: password }).then(response => {
+        //解析出token,和过期时间
+        const { token } = response
+        commit('SET_TOKEN', token)
+        setToken(token)
+        //处理菜单
         resolve()
       }).catch(error => {
         reject(error)
@@ -48,13 +58,11 @@ const actions = {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
         const {data} = response
-
         if (!data) {
           return reject('Verification failed, please Login again.')
         }
-
-        const {name, avatar} = data
-
+        const {name, avatar,roles} = data
+        commit('SET_ROLES',roles)
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
         resolve(data)

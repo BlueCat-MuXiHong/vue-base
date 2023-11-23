@@ -12,7 +12,7 @@
         :unique-opened="false"
         mode="vertical"
       >
-        <sidebar-item v-for="route in routes" :key="route.path" :base-path="route.path" :item="route"/>
+        <sidebar-item v-for="route in permission_routes" :key="route.path" :base-path="route.path" :item="route"/>
       </el-menu>
     </el-scrollbar>
   </div>
@@ -28,7 +28,8 @@ export default {
   components: {SidebarItem, Logo},
   computed: {
     ...mapGetters([
-      'sidebar'
+      'sidebar',
+      'permission_routes'
     ]),
     routes() {
       return this.$router.options.routes
